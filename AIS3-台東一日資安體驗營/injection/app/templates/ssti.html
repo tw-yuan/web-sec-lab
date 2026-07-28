@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}報告產生器 — SSTI{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-badge">Challenge 03 &mdash; Server-Side Template Injection (SSTI)</div>
+  <h1 class="page-title">個人化報告產生器</h1>
+  <p class="page-desc">
+    輸入您的姓名，系統將產生一份個人化報告。後端使用 Jinja2 模板引擎渲染內容。
+  </p>
+</div>
+
+<div class="tool-panel">
+  <form method="GET" action="/report" class="tool-form">
+    <label class="form-label" for="name">
+      <span class="label-icon">&gt;</span> 收件人姓名
+    </label>
+    <div class="input-row">
+      <input
+        type="text"
+        id="name"
+        name="name"
+        class="form-input"
+        placeholder="例：Alice"
+        value="{{ name | e }}"
+        autocomplete="off"
+        spellcheck="false"
+      >
+      <button type="submit" class="btn btn-primary">產生報告</button>
+    </div>
+  </form>
+
+  {% if result is not none %}
+  <div class="result-box">
+    <div class="result-header">REPORT OUTPUT</div>
+    <div class="report-content">
+      <div class="output-box">{{ result }}</div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<div class="hint-panel">
+  <details>
+    <summary>需要提示？</summary>
+    <ul>
+      <li>後端使用 Python Flask + Jinja2，且直接將使用者輸入嵌入模板字串後再渲染。</li>
+      <li>Jinja2 使用 <code>{{ '{{' }} ... {{ '}}' }}</code> 執行表達式。<br>
+          試試看輸入 <code>{{ '{{' }}7*7{{ '}}' }}</code>，看看結果是 <code>49</code> 還是字串本身。</li>
+      <li>Flask 應用程式設定可以透過 <code>{{ '{{' }}config{{ '}}' }}</code> 列出，<br>
+          也可用 <code>{{ '{{' }}config['KEY']{{ '}}' }}</code> 讀取特定值。</li>
+      <li>進階：透過 Python 物件鏈取得 <code>os</code> 模組後可執行任意系統指令：<br>
+          <code>{{ '{{' }}config.__class__.__init__.__globals__['os'].popen('id').read(){{ '}}' }}</code></li>
+    </ul>
+  </details>
+</div>
+{% endblock %}

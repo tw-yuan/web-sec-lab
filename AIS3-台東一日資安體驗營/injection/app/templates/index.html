@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}任務簡報 — AIS3 Corp{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <div class="hero-badge">PENETRATION TESTING LAB</div>
+  <h1 class="hero-title">
+    <span class="accent">AIS3 Corp</span> 系統滲透測試
+  </h1>
+  <p class="hero-desc">
+    您好，滲透測試員。AIS3 Corp 委託您對其內部管理系統進行安全稽核。<br>
+    系統共有 <strong>四個功能模組</strong>，每個模組都隱藏著一個 <code>flag</code>。<br>
+    找出所有漏洞，取得四個 flag，任務完成。
+  </p>
+</div>
+
+<div class="challenge-grid">
+
+  <!-- Challenge 1 -->
+  <div class="challenge-card">
+    <div class="card-header">
+      <span class="card-num">01</span>
+      <span class="card-tag tag-easy">EASY</span>
+    </div>
+    <h2 class="card-title">Command Injection</h2>
+    <h3 class="card-subtitle">網路診斷工具</h3>
+    <p class="card-desc">
+      IT 部門建置了一套內部網路診斷工具，讓管理員可以快速確認主機連線狀態。
+      這個工具真的只能 ping 嗎？
+    </p>
+    <div class="card-hints">
+      <div class="hint">
+        <span class="hint-label">目標</span>
+        讀取 <code>/flag_cmdi.txt</code> 的內容
+      </div>
+      <div class="hint">
+        <span class="hint-label">提示</span>
+        Shell 允許用 <code>;</code> <code>|</code> <code>&&</code> 串接多個指令
+      </div>
+    </div>
+    <a href="/network-tool" class="btn">進入挑戰 &rarr;</a>
+  </div>
+
+  <!-- Challenge 2 -->
+  <div class="challenge-card">
+    <div class="card-header">
+      <span class="card-num">02</span>
+      <span class="card-tag tag-easy">EASY</span>
+    </div>
+    <h2 class="card-title">Cross-Site Scripting</h2>
+    <h3 class="card-subtitle">客戶回饋系統</h3>
+    <p class="card-desc">
+      行銷部門建置了客戶回饋搜尋系統，讓內部人員快速查閱意見。
+      搜尋結果的呈現方式似乎有點問題……
+    </p>
+    <div class="card-hints">
+      <div class="hint">
+        <span class="hint-label">目標</span>
+        讀取瀏覽器中名為 <code>flag</code> 的 Cookie
+      </div>
+      <div class="hint">
+        <span class="hint-label">提示</span>
+        <code>document.cookie</code> 可以讀取所有非 HttpOnly 的 Cookie
+      </div>
+    </div>
+    <a href="/feedback" class="btn">進入挑戰 &rarr;</a>
+  </div>
+
+  <!-- Challenge 3 -->
+  <div class="challenge-card">
+    <div class="card-header">
+      <span class="card-num">03</span>
+      <span class="card-tag tag-medium">MEDIUM</span>
+    </div>
+    <h2 class="card-title">Server-Side Template Injection</h2>
+    <h3 class="card-subtitle">個人化報告產生器</h3>
+    <p class="card-desc">
+      系統提供個人化報告功能，會把使用者名稱嵌入報告內容。
+      如果輸入的不是名字，而是 Jinja2 表達式呢？
+    </p>
+    <div class="card-hints">
+      <div class="hint">
+        <span class="hint-label">目標</span>
+        透過 SSTI 讀取 Flask config 中的 <code>SECRET_FLAG</code>
+      </div>
+      <div class="hint">
+        <span class="hint-label">提示</span>
+        Jinja2 中 <code>{{ '{{' }}config{{ '}}' }}</code> 可以列出應用程式設定
+      </div>
+    </div>
+    <a href="/report" class="btn">進入挑戰 &rarr;</a>
+  </div>
+
+  <!-- Challenge 4 -->
+  <div class="challenge-card">
+    <div class="card-header">
+      <span class="card-num">04</span>
+      <span class="card-tag tag-medium">MEDIUM</span>
+    </div>
+    <h2 class="card-title">SQL Injection</h2>
+    <h3 class="card-subtitle">員工資料查詢系統</h3>
+    <p class="card-desc">
+      HR 部門建置了員工資料查詢系統，依員工編號搜尋資料。
+      後端直接將輸入拼接進 SQL 查詢，資料庫裡藏著秘密……
+    </p>
+    <div class="card-hints">
+      <div class="hint">
+        <span class="hint-label">目標</span>
+        從資料庫的隱藏 table 中撈出 flag
+      </div>
+      <div class="hint">
+        <span class="hint-label">提示</span>
+        <code>UNION SELECT</code> 可以合併多個查詢的結果
+      </div>
+    </div>
+    <a href="/employee-search" class="btn">進入挑戰 &rarr;</a>
+  </div>
+
+</div>
+
+<div class="info-box">
+  <strong>注意事項：</strong>
+  本系統為教學用途，所有攻擊行為均在隔離的 Docker 容器內執行，不會影響宿主機。
+  請勿嘗試逃逸容器或攻擊其他系統。
+</div>
+{% endblock %}

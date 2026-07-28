@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}員工查詢系統 — SQL Injection{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-badge">Challenge 04 &mdash; SQL Injection</div>
+  <h1 class="page-title">員工資料查詢系統</h1>
+  <p class="page-desc">
+    HR 部門提供此系統，依員工編號查詢員工資料。
+    後端使用 SQLite，資料庫中除了員工資料，還有其他東西……
+  </p>
+</div>
+
+<div class="tool-panel">
+  <form method="GET" action="/employee-search" class="tool-form">
+    <label class="form-label" for="id">
+      <span class="label-icon">&gt;</span> 員工編號 (Employee ID)
+    </label>
+    <div class="input-row">
+      <span class="input-prefix">WHERE id =</span>
+      <input
+        type="text"
+        id="id"
+        name="id"
+        class="form-input"
+        placeholder="例：1001"
+        value="{{ emp_id | e }}"
+        autocomplete="off"
+        spellcheck="false"
+      >
+      <button type="submit" class="btn btn-primary">查詢</button>
+    </div>
+  </form>
+
+  {% if emp_id %}
+  <div class="result-box {% if error %}error-box{% endif %}">
+    <div class="result-header">
+      {% if error %}ERROR{% else %}QUERY RESULT{% endif %}
+    </div>
+
+    {% if query %}
+    <div class="sql-query">
+      <span class="sql-label">Executed SQL:</span>
+      <code>{{ query }}</code>
+    </div>
+    {% endif %}
+
+    {% if error %}
+    <pre>{{ error }}</pre>
+    {% elif results %}
+    <table class="feedback-table">
+      <thead>
+        <tr>
+          {% for key in results[0].keys() %}
+          <th>{{ key }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in results %}
+        <tr>
+          {% for val in row.values() %}
+          <td>{{ val }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="no-result">查無符合的員工資料。</p>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+<div class="hint-panel">
+  <details>
+    <summary>需要提示？</summary>
+    <ul>
+      <li>觀察頁面上顯示的 <em>Executed SQL</em>，後端直接將輸入拼接進 SQL 查詢。</li>
+      <li>試試看在 ID 後面加上單引號 <code>'</code>，觀察是否出現錯誤訊息。</li>
+      <li>使用 <code>UNION</code> 可以將額外的查詢結果附加到原本的結果中。<br>
+          前提是兩個 SELECT 的欄位數量要相同（原本有 5 欄）。</li>
+      <li>資料庫的 table 清單可以從 <code>sqlite_master</code> 查到：<br>
+          <code>0 UNION SELECT name,sql,1,1,1 FROM sqlite_master--</code></li>
+      <li>找到隱藏的 table 之後，試試看能不能把 flag 撈出來。</li>
+    </ul>
+  </details>
+</div>
+{% endblock %}

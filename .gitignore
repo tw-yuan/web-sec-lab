@@ -1,0 +1,13 @@
+node_modules/
+package-lock.json
+
+# 學員上傳的檔案不要進版控（保留目錄本身）
+AIS3-台東一日資安體驗營/file-upload/src/uploads/*
+!AIS3-台東一日資安體驗營/file-upload/src/uploads/.gitkeep
+
+# 本機工具設定
+.claude/
+
+.DS_Store
+__pycache__/
+*.pyc

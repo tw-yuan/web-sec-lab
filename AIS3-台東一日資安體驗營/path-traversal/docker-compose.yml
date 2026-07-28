@@ -1,0 +1,6 @@
+services:
+  app:
+    build: .
+    ports:
+      - "10005:5000"
+    restart: unless-stopped

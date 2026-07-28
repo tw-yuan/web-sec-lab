@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}客戶回饋系統 — XSS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-badge">Challenge 02 &mdash; Cross-Site Scripting (XSS)</div>
+  <h1 class="page-title">客戶回饋系統</h1>
+  <p class="page-desc">
+    搜尋客戶留下的回饋意見。系統支援關鍵字搜尋，結果將即時顯示於下方。
+  </p>
+</div>
+
+<div class="tool-panel">
+  <form method="GET" action="/feedback" class="tool-form">
+    <label class="form-label" for="q">
+      <span class="label-icon">&gt;</span> 搜尋關鍵字
+    </label>
+    <div class="input-row">
+      <input
+        type="text"
+        id="q"
+        name="q"
+        class="form-input"
+        placeholder="輸入關鍵字搜尋回饋..."
+        value="{{ keyword | e }}"
+        autocomplete="off"
+        spellcheck="false"
+      >
+      <button type="submit" class="btn btn-primary">搜尋</button>
+    </div>
+  </form>
+
+  <div class="result-box">
+    <div class="result-header">SEARCH RESULTS</div>
+
+    {% if keyword %}
+    {# VULNERABLE: keyword is rendered without escaping #}
+    <div class="search-summary">搜尋結果：{{ keyword | safe }}</div>
+    {% endif %}
+
+    {% if feedbacks %}
+    <table class="feedback-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>客戶姓名</th>
+          <th>回饋內容</th>
+          <th>日期</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for fb in feedbacks %}
+        <tr>
+          <td>{{ fb.id }}</td>
+          <td>{{ fb.author }}</td>
+          <td>{{ fb.content }}</td>
+          <td>{{ fb.date }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="no-result">沒有符合的回饋資料。</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="hint-panel">
+  <details>
+    <summary>需要提示？</summary>
+    <ul>
+      <li>搜尋結果頁面上「搜尋結果：」後面的文字是怎麼顯示的？會做 HTML 轉義嗎？</li>
+      <li>試試看在搜尋框輸入 <code>&lt;b&gt;test&lt;/b&gt;</code>，觀察頁面的變化。</li>
+      <li>Flag 存放在名為 <code>flag</code> 的 Cookie 中（非 HttpOnly）。<br>
+          JavaScript 可以用 <code>document.cookie</code> 讀取，<br>
+          再用 <code>document.write()</code> 或 <code>alert()</code> 顯示出來。</li>
+      <li>構造一個 URL，讓別人一點開就會自動執行你的 JavaScript。</li>
+    </ul>
+  </details>
+</div>
+{% endblock %}

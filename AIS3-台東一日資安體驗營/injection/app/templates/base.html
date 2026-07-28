@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}AIS3 Corp Internal System{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="bracket">[</span>
+      <span class="brand-text">AIS3 Corp</span>
+      <span class="bracket">]</span>
+      <span class="nav-subtitle">Internal Management System</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="/" {% if request.path == '/' %}class="active"{% endif %}>任務簡報</a></li>
+      <li><a href="/network-tool" {% if request.path == '/network-tool' %}class="active"{% endif %}>網路診斷</a></li>
+      <li><a href="/feedback" {% if request.path == '/feedback' %}class="active"{% endif %}>客戶回饋</a></li>
+      <li><a href="/report" {% if request.path == '/report' %}class="active"{% endif %}>報告產生器</a></li>
+      <li><a href="/employee-search" {% if request.path == '/employee-search' %}class="active"{% endif %}>員工查詢</a></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <span class="blink">_</span> AIS3 Corp &copy; 2025 &nbsp;|&nbsp; Penetration Testing Lab
+  </footer>
+</body>
+</html>

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}網路診斷工具 — Command Injection{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-badge">Challenge 01 &mdash; Command Injection</div>
+  <h1 class="page-title">網路診斷工具</h1>
+  <p class="page-desc">
+    AIS3 Corp IT 部門提供此工具，讓管理員快速確認內部網路主機的連線狀態。
+    輸入主機名稱或 IP 位址，系統將回傳 ping 結果。
+  </p>
+</div>
+
+<div class="tool-panel">
+  <form method="POST" action="/network-tool" class="tool-form">
+    <label class="form-label" for="host">
+      <span class="label-icon">$</span> 目標主機 (Hostname / IP)
+    </label>
+    <div class="input-row">
+      <span class="input-prefix">ping -c 2</span>
+      <input
+        type="text"
+        id="host"
+        name="host"
+        class="form-input"
+        placeholder="例：127.0.0.1"
+        value="{{ host | e }}"
+        autocomplete="off"
+        spellcheck="false"
+      >
+      <button type="submit" class="btn btn-primary">執行</button>
+    </div>
+  </form>
+
+  {% if error %}
+  <div class="result-box error-box">
+    <div class="result-header">ERROR</div>
+    <pre>{{ error }}</pre>
+  </div>
+  {% endif %}
+
+  {% if result %}
+  <div class="result-box">
+    <div class="result-header">OUTPUT</div>
+    <pre>{{ result }}</pre>
+  </div>
+  {% endif %}
+</div>
+
+<div class="hint-panel">
+  <details>
+    <summary>需要提示？</summary>
+    <ul>
+      <li>觀察 URL 或表單送出的資料，想想系統在背後執行什麼 shell 指令。</li>
+      <li>在 Unix shell 中，<code>;</code> 可以在一行內執行多個指令，例如：<code>127.0.0.1; whoami</code></li>
+      <li>Flag 藏在容器的 <code>/flag_cmdi.txt</code>，試試看能不能用 <code>cat</code> 讀出來。</li>
+    </ul>
+  </details>
+</div>
+{% endblock %}
