@@ -1,0 +1,16 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ais-ctf-app:latest
+    container_name: ais-ctf-app
+    ports:
+      - "8002:8000"
+    env_file:
+      - .env
+    volumes:
+      # 直接掛載本機準備好的資料（含 80 組參賽代碼、ctf.db）。
+      # container 內以 ctf(uid 10001)執行，故 ./data 需 chown 成 10001 才寫得進 sqlite。
+      - ./data:/srv/data
+    restart: unless-stopped

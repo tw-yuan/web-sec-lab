@@ -1,0 +1,11 @@
+# 機密與執行期資料，切勿進版控
+.env
+data/
+data.bak-*/
+__pycache__/
+*.pyc
+.venv/
+*.db
+*.db-shm
+*.db-wal
+users.csv

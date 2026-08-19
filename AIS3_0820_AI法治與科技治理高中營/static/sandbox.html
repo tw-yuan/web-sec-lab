@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<!--
+  XSS 沙箱頁（spec §3.4 / §7.3）
+
+  這一頁由 <iframe sandbox="allow-scripts">（**沒有** allow-same-origin）載入，
+  所以它跑在 null origin：
+    - 讀不到主站的 cookie / localStorage / DOM
+    - 沒有 allow-forms / allow-popups / allow-top-navigation
+  再加上下面這組 CSP（後端也會用 HTTP 標頭送同一組）：
+    default-src 'none'  → 注入的 JS 不能 fetch / XHR / WebSocket / 載圖 / 開 iframe，
+                          也就是打不了外部目標、外連不出去。
+    script-src 'unsafe-inline' → 只允許執行注入的 inline JS，這是本題的教學目的。
+
+  破關訊號是良性的 window.__solve()，不涉及任何真實資料竊取。
+-->
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; form-action 'none'; base-uri 'none'">
+<title>sandbox</title>
+<style>
+  html,body{margin:0;padding:0;background:#fff;color:#111;
+    font-family:-apple-system,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;font-size:14px}
+  #out{padding:12px;min-height:60px}
+  #ph{padding:12px;color:#888}
+</style>
+</head>
+<body>
+<div id="ph">（模型的輸出會被 innerHTML 放進這個沙箱頁面）</div>
+<div id="out"></div>
+<script>
+(function () {
+  'use strict';
+  var NONCE = null;
+  var parentWin = window.parent;
+
+  function post(msg) {
+    // 父頁是主站來源；這裡是 null origin，targetOrigin 只能用 '*'。
+    // 訊息內容不含任何機密（只有一次性 nonce），父頁會驗 event.source。
+    try { parentWin.postMessage(msg, '*'); } catch (e) { /* noop */ }
+  }
+
+  // 預埋的破關目標（spec §3.4：良性訊號，不碰真實資料）
+  window.__solve = function (n) {
+    post({ type: 'xss_solve', nonce: (typeof n === 'string' && n) ? n : NONCE });
+    return 'ok';
+  };
+  // 常見別名，降低學員因為打錯名字而卡關
+  window.solve = window.__solve;
+
+  window.addEventListener('message', function (ev) {
+    if (ev.source !== parentWin) return;
+    var d = ev.data;
+    if (!d || d.type !== 'render') return;
+    NONCE = typeof d.nonce === 'string' ? d.nonce : null;
+    var ph = document.getElementById('ph');
+    if (ph) ph.style.display = 'none';
+    var out = document.getElementById('out');
+    out.innerHTML = '';
+    // ↓↓↓ 這一行就是這一關「刻意做出來的漏洞」：直接信任模型輸出。
+    out.innerHTML = String(d.html == null ? '' : d.html);
+    post({ type: 'rendered' });
+  }, false);
+
+  post({ type: 'ready' });
+})();
+</script>
+</body>
+</html>
